@@ -1,13 +1,10 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
+import { BalanceAccountController } from "@modules/accounts/useCases/balanceAccount/BalanceAccountController";
 
 const balanceRoutes = Router();
 
-balanceRoutes.get("/", (request: Request, response: Response) => {
-  const { account_id } = request.query;
+const balanceAccountController = new BalanceAccountController();
 
-  console.log("account_id: ", account_id);
-
-  return response.send();
-});
+balanceRoutes.get("/", balanceAccountController.handle);
 
 export { balanceRoutes };
