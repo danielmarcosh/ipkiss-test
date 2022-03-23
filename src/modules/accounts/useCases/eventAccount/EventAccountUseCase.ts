@@ -35,9 +35,11 @@ class EventAccountUseCase {
         payload = await this.accountsRepository.deposit(accountAlreadyExists);
       }
     } else if (type === "withdraw") {
-      console.log("Aqui");
       if (!accountAlreadyExists) {
         throw new EventError(0, 400);
+      } else {
+        accountAlreadyExists.balance -= amount;
+        payload = await this.accountsRepository.withdraw(accountAlreadyExists);
       }
     }
     return {
