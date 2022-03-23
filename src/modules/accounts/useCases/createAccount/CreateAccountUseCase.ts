@@ -1,8 +1,8 @@
 import { AppError } from "@shared/errors/AppError";
 import { inject, injectable } from "tsyringe";
-import { Account } from "../entities/Account";
-import { IAccount, IRequestAccount } from "../entities/IAccount";
-import { IAccountsRepository } from "../repositories/IAccountsRepository";
+import { Account } from "../../entities/Account";
+import { IRequestAccount } from "../../entities/IAccount";
+import { IAccountsRepository } from "../../repositories/IAccountsRepository";
 
 @injectable()
 class CreateAccountUseCase {
@@ -15,13 +15,20 @@ class CreateAccountUseCase {
       throw new AppError("A negative balance", 400);
     }
     if (!destination) {
-      throw new AppError("Destination isn't already exists", 400);
+      throw new AppError("Destination is empty or null", 400);
+    }
+    const accountAlreadyExists = await this.accountsRepository.findyByAccount(
+      destination
+    );
+    if (accountAlreadyExists) {
+      throw new AppError("Destiny does not exist", 400);
     }
 
     const account = new Account();
-    account.balance += amount;
     account.id = destination;
-    account.type = type;
+    if (type === "deposit") {
+      account.balance += amount;
+    }
 
     await this.accountsRepository.create(account);
 

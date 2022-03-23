@@ -1,5 +1,5 @@
-import { CreateAccountController } from "@modules/accounts/useCases/CreateAccountController";
 import { Router } from "express";
+import { CreateAccountController } from "@modules/accounts/useCases/createAccount/CreateAccountController";
 
 const eventRoutes = Router();
 

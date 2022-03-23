@@ -1,6 +1,5 @@
 interface IAccount {
   id?: string;
-  type: string;
   balance?: number;
 }
 interface IRequestAccount {

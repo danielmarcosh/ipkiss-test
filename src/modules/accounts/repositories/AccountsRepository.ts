@@ -4,20 +4,18 @@ import { IAccountsRepository } from "./IAccountsRepository";
 
 class AccountsRepository implements IAccountsRepository {
   accounts: IAccount[] = [];
-  async create({ id, type, balance }: IAccount): Promise<IAccount> {
-    const account = new Account();
-
-    Object.assign(account, {
-      id,
-      type,
-      balance,
-    });
-
+  async create(account: IAccount): Promise<IAccount> {
     this.accounts.push(account);
 
     console.log(this.accounts);
 
     return account;
+  }
+  async findyByAccount(id: string): Promise<IAccount> {
+    return this.accounts.find((account) => account.id === id);
+  }
+  deposit(data: IAccount): Promise<IAccount> {
+    throw new Error("Method not implemented.");
   }
 }
 
