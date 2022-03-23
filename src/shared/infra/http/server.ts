@@ -8,6 +8,7 @@ import { router } from "./routes";
 
 import "@shared/container";
 import { AppError } from "@shared/errors/AppError";
+import { EventError } from "@shared/errors/EventError";
 
 const app = express();
 
@@ -21,6 +22,8 @@ app.use(
       return response.status(err.statusCode).json({
         message: err.message,
       });
+    } else if (err instanceof EventError) {
+      return response.status(err.statusCode).json(err.value);
     }
 
     return response.status(500).json({

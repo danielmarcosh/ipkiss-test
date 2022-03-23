@@ -1,20 +1,21 @@
 import { container } from "tsyringe";
 import { Request, Response } from "express";
-import { CreateAccountUseCase } from "./CreateAccountUseCase";
+import { EventAccountUseCase } from "./EventAccountUseCase";
 
-class CreateAccountController {
+class EventAccountController {
   async handle(request: Request, response: Response): Promise<Response> {
-    const { type, destination, amount } = request.body;
-    const createAccountUseCase = container.resolve(CreateAccountUseCase);
+    const { type, destination, amount, origin } = request.body;
+    const createAccountUseCase = container.resolve(EventAccountUseCase);
 
     const payload = await createAccountUseCase.execute({
       type,
       destination,
       amount,
+      origin,
     });
 
     return response.status(201).json(payload);
   }
 }
 
-export { CreateAccountController };
+export { EventAccountController };
