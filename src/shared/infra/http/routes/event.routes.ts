@@ -1,9 +1,10 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
+import { CreateAccountController } from "@modules/accounts/useCases/createAccount/CreateAccountController";
 
 const eventRoutes = Router();
 
-eventRoutes.post("/", (request: Request, response: Response) => {
-  console.log("event router");
-});
+const createAccountController = new CreateAccountController();
+
+eventRoutes.post("/", createAccountController.handle);
 
 export { eventRoutes };
