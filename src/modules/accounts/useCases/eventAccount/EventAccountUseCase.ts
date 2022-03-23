@@ -1,4 +1,5 @@
 import { AppError } from "@shared/errors/AppError";
+import { EventError } from "@shared/errors/EventError";
 import { inject, injectable } from "tsyringe";
 import { Account } from "../../entities/Account";
 import { IRequestAccount } from "../../entities/IAccount";
@@ -11,6 +12,7 @@ class EventAccountUseCase {
     private accountsRepository: IAccountsRepository
   ) {}
   async execute({ type, destination, amount }: IRequestAccount): Promise<any> {
+    console.log({ type, destination, amount });
     if (amount < 0) {
       throw new AppError("A negative balance", 400);
     }
@@ -32,13 +34,18 @@ class EventAccountUseCase {
         accountAlreadyExists.balance += amount;
         payload = await this.accountsRepository.deposit(accountAlreadyExists);
       }
-      return {
-        destination: {
-          id: payload.id,
-          balance: payload.balance,
-        },
-      };
+    } else if (type === "withdraw") {
+      console.log("Aqui");
+      if (!accountAlreadyExists) {
+        throw new EventError(0, 400);
+      }
     }
+    return {
+      destination: {
+        id: payload.id,
+        balance: payload.balance,
+      },
+    };
   }
 }
 
