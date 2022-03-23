@@ -39,9 +39,6 @@ class EventAccountUseCase {
     if (amount < 0) {
       throw new AppError("A negative balance", 400);
     }
-    if (!destination) {
-      throw new AppError("Destination is empty or null", 400);
-    }
     const accountAlreadyExists = await this.accountsRepository.findyByAccount(
       destination
     );
@@ -81,12 +78,14 @@ class EventAccountUseCase {
         };
       }
     } else if (type === "withdraw") {
-      if (!accountAlreadyExists) {
+      const accountOriginAlreadyExists =
+        await this.accountsRepository.findyByAccount(origin);
+      if (!accountOriginAlreadyExists) {
         throw new EventError(0, 404);
       } else {
         const account = new Account();
-        account.id = accountAlreadyExists.id;
-        account.balance = accountAlreadyExists.balance;
+        account.id = accountOriginAlreadyExists.id;
+        account.balance = accountOriginAlreadyExists.balance;
 
         const changedAccount = await this.withdrawAccountUseCase.execute({
           account,

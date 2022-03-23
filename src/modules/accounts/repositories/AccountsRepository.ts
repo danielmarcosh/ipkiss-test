@@ -1,4 +1,3 @@
-import { Account } from "../entities/Account";
 import { IAccount } from "../entities/IAccount";
 import { IAccountsRepository } from "./IAccountsRepository";
 
