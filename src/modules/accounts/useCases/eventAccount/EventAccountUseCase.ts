@@ -11,8 +11,13 @@ class EventAccountUseCase {
     @inject("AccountsRepository")
     private accountsRepository: IAccountsRepository
   ) {}
-  async execute({ type, destination, amount }: IRequestAccount): Promise<any> {
-    console.log({ type, destination, amount });
+  async execute({
+    type,
+    destination,
+    amount,
+    origin,
+  }: IRequestAccount): Promise<any> {
+    console.log({ type, destination, amount, origin });
     if (amount < 0) {
       throw new AppError("A negative balance", 400);
     }
@@ -24,30 +29,72 @@ class EventAccountUseCase {
     );
     const account = new Account();
     account.id = destination;
-    let payload: Account = null;
+    let payload: any = null;
 
     if (type === "deposit") {
       if (!accountAlreadyExists) {
         account.balance = amount;
-        payload = await this.accountsRepository.create(account);
+        const result = await this.accountsRepository.create(account);
+        payload = {
+          destination: {
+            id: result.id,
+            balance: result.balance,
+          },
+        };
       } else {
         accountAlreadyExists.balance += amount;
-        payload = await this.accountsRepository.deposit(accountAlreadyExists);
+        const result = await this.accountsRepository.deposit(
+          accountAlreadyExists
+        );
+        payload = {
+          destination: {
+            id: result.id,
+            balance: result.balance,
+          },
+        };
       }
     } else if (type === "withdraw") {
       if (!accountAlreadyExists) {
-        throw new EventError(0, 400);
+        throw new EventError(0, 404);
       } else {
         accountAlreadyExists.balance -= amount;
-        payload = await this.accountsRepository.withdraw(accountAlreadyExists);
+        const result = await this.accountsRepository.withdraw(
+          accountAlreadyExists
+        );
+        payload = {
+          origin: {
+            id: result.id,
+            balance: result.balance,
+          },
+        };
+      }
+    } else if (type === "transfer") {
+      const accountOriginAlreadyExists =
+        await this.accountsRepository.findyByAccount(origin);
+      if (!accountAlreadyExists || !accountOriginAlreadyExists) {
+        throw new EventError(0, 404);
+      } else {
+        console.log(accountOriginAlreadyExists);
+        console.log(accountAlreadyExists);
+        accountOriginAlreadyExists.balance -= amount;
+        accountAlreadyExists.balance += amount;
+        await this.accountsRepository.transfer(
+          accountOriginAlreadyExists,
+          accountAlreadyExists
+        );
+        payload = {
+          origin: {
+            id: accountOriginAlreadyExists.id,
+            balance: accountOriginAlreadyExists.balance,
+          },
+          destination: {
+            id: accountAlreadyExists.id,
+            balance: accountAlreadyExists.balance,
+          },
+        };
       }
     }
-    return {
-      destination: {
-        id: payload.id,
-        balance: payload.balance,
-      },
-    };
+    return payload;
   }
 }
 

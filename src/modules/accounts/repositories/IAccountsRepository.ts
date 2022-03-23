@@ -5,6 +5,7 @@ interface IAccountsRepository {
   findyByAccount(id: string): Promise<IAccount>;
   deposit(data: IAccount): Promise<IAccount>;
   withdraw(data: IAccount): Promise<IAccount>;
+  transfer(origin: IAccount, destination: IAccount): Promise<void>;
 }
 
 export { IAccountsRepository };

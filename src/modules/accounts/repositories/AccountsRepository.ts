@@ -27,6 +27,16 @@ class AccountsRepository implements IAccountsRepository {
     });
     return this.accounts.find((account) => account.id === destination.id);
   }
+  async transfer(origin: IAccount, destination: IAccount): Promise<void> {
+    this.accounts.forEach((account) => {
+      if (account.id === destination.id) {
+        account.balance = destination.balance;
+      }
+      if (origin.id === destination.id) {
+        origin.balance = destination.balance;
+      }
+    });
+  }
 }
 
 export { AccountsRepository };
