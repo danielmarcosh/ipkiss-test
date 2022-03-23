@@ -1,10 +1,10 @@
+import { EventAccountController } from "@modules/accounts/useCases/eventAccount/EventAccountController";
 import { Router } from "express";
-import { CreateAccountController } from "@modules/accounts/useCases/createAccount/CreateAccountController";
 
 const eventRoutes = Router();
 
-const createAccountController = new CreateAccountController();
+const eventAccountController = new EventAccountController();
 
-eventRoutes.post("/", createAccountController.handle);
+eventRoutes.post("/", eventAccountController.handle);
 
 export { eventRoutes };

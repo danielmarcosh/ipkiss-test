@@ -5,7 +5,7 @@ import { IRequestAccount } from "../../entities/IAccount";
 import { IAccountsRepository } from "../../repositories/IAccountsRepository";
 
 @injectable()
-class CreateAccountUseCase {
+class EventAccountUseCase {
   constructor(
     @inject("AccountsRepository")
     private accountsRepository: IAccountsRepository
@@ -20,25 +20,26 @@ class CreateAccountUseCase {
     const accountAlreadyExists = await this.accountsRepository.findyByAccount(
       destination
     );
-    if (accountAlreadyExists) {
-      throw new AppError("Destiny does not exist", 400);
-    }
-
     const account = new Account();
     account.id = destination;
+    let payload: Account = null;
+
     if (type === "deposit") {
-      account.balance += amount;
+      if (!accountAlreadyExists) {
+        account.balance = amount;
+        payload = await this.accountsRepository.create(account);
+      } else {
+        accountAlreadyExists.balance += amount;
+        payload = await this.accountsRepository.deposit(accountAlreadyExists);
+      }
+      return {
+        destination: {
+          id: payload.id,
+          balance: payload.balance,
+        },
+      };
     }
-
-    await this.accountsRepository.create(account);
-
-    return {
-      destination: {
-        id: account.id,
-        balance: account.balance,
-      },
-    };
   }
 }
 
-export { CreateAccountUseCase };
+export { EventAccountUseCase };
