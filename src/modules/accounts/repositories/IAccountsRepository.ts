@@ -7,6 +7,7 @@ interface IAccountsRepository {
   withdraw(data: IAccount): Promise<IAccount>;
   transfer(origin: IAccount, destination: IAccount): Promise<void>;
   reset(): Promise<void>;
+  list(): Promise<void>;
 }
 
 export { IAccountsRepository };
