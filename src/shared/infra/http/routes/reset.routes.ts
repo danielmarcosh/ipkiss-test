@@ -5,6 +5,6 @@ const resetRoutes = Router();
 
 const resetAccountController = new ResetAccountController();
 
-resetRoutes.get("/", resetAccountController.handle);
+resetRoutes.post("/", resetAccountController.handle);
 
 export { resetRoutes };
