@@ -102,9 +102,18 @@ class EventAccountUseCase {
         };
       }
     } else if (type === "transfer") {
+      let changedAccount;
       const accountOriginAlreadyExists =
         await this.accountsRepository.findyByAccount(origin);
-      if (!accountAlreadyExists || !accountOriginAlreadyExists) {
+      if (!accountAlreadyExists) {
+        const account: IAccount = await this.createAccountUseCase.execute({
+          destination,
+          amount: 0,
+        });
+
+        changedAccount = await this.accountsRepository.create(account);
+      }
+      if (!accountOriginAlreadyExists) {
         throw new EventError(0, 404);
       } else {
         const accountOrigin = new Account();
@@ -112,8 +121,8 @@ class EventAccountUseCase {
         accountOrigin.balance = accountOriginAlreadyExists.balance;
 
         const accountDestination = new Account();
-        accountDestination.id = accountAlreadyExists.id;
-        accountDestination.balance = accountAlreadyExists.balance;
+        accountDestination.id = changedAccount.id;
+        accountDestination.balance = changedAccount.balance;
 
         const accounts = await this.transferAccountUseCase.execute({
           accountOrigin,
@@ -135,6 +144,7 @@ class EventAccountUseCase {
         };
       }
     }
+    await this.accountsRepository.list();
     return payload;
   }
 }

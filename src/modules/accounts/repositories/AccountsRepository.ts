@@ -45,6 +45,9 @@ class AccountsRepository implements IAccountsRepository {
   async reset(): Promise<void> {
     this.accounts = [];
   }
+  async list(): Promise<void> {
+    console.log(this.accounts);
+  }
 }
 
 export { AccountsRepository };
